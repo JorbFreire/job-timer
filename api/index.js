@@ -25,7 +25,7 @@ async function getTimeAsImage(project_name, index) {
   const canvas = createCanvas(512, 512)
   const canvasContext = canvas.getContext('2d')
   canvasContext.font = '290px Impact'
-  canvasContext.fillStyle = '#0fa'
+  canvasContext.fillStyle = '#fff'
 
   const { data: { data } } = await axios.get(
     `https://wakatime.com/api/v1/users/current/all_time_since_today?project=${project_name}`,
