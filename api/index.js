@@ -42,9 +42,9 @@ app.get('/api/time/:project_name', async (request, response) => {
 app.get("/api/image/time/:force_update/:project_name.png", async (request, response) => {
   const { project_name } = request.params
 
-  const canvas = createCanvas(560, 128)
+  const canvas = createCanvas(1024, 512)
   const canvasContext = canvas.getContext('2d')
-  canvasContext.font = '128px Impact'
+  canvasContext.font = '246px Impact'
   canvasContext.fillStyle = '#fff'
 
   try {
@@ -66,7 +66,7 @@ app.get("/api/image/time/:force_update/:project_name.png", async (request, respo
       { format: ['hours', 'minutes'] }
     ).replace(" hours ", ":").replace(" minutes", "h")
 
-    canvasContext.fillText(formatedDuration, 0, 104)
+    canvasContext.fillText(formatedDuration, -16, 256)
 
     const img = Buffer.from(
       canvas.toDataURL().replace(/^data:image\/png;base64,/, ''),
