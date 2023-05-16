@@ -7,7 +7,7 @@ const intervalToDuration = require('date-fns/intervalToDuration')
 
 require('dotenv/config');
 
-// const { createCanvas } = require('canvas')
+const { createCanvas } = require('canvas')
 
 const app = express();
 
