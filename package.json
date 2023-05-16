@@ -8,6 +8,7 @@
     "dev": "nodemon"
   },
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.40",
     "axios": "^1.4.0",
     "canvas": "^2.11.2",
     "cors": "^2.8.5",
