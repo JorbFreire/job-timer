@@ -42,9 +42,10 @@ app.get('/api/time/:project_name', async (request, response) => {
 app.get("/api/image/time/:project_name.png", async (request, response) => {
   const { project_name } = request.params
 
-  const canvas = createCanvas(320, 30)
-  const ctx = canvas.getContext('2d')
-  ctx.font = '30px Impact'
+  const canvas = createCanvas(560, 128)
+  const canvasContext = canvas.getContext('2d')
+  canvasContext.font = '128px Impact'
+  canvasContext.fillStyle = '#fff'
 
   try {
     const { data: { data } } = await axios.get(
@@ -60,12 +61,12 @@ app.get("/api/image/time/:project_name.png", async (request, response) => {
     duration.hours += duration.days * 24
     duration.days = 0
 
-    const formatedDuration = formatDuration(
+    let formatedDuration = formatDuration(
       duration,
       { format: ['hours', 'minutes'] }
-    )
+    ).replace(" hours ", ":").replace(" minutes", "h")
 
-    ctx.fillText(formatedDuration, 0, 26)
+    canvasContext.fillText(formatedDuration, 0, 104)
 
     const img = Buffer.from(
       canvas.toDataURL().replace(/^data:image\/png;base64,/, ''),
@@ -84,4 +85,3 @@ app.get("/api/image/time/:project_name.png", async (request, response) => {
 
 
 module.exports = app;
-
