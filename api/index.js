@@ -21,6 +21,43 @@ const wakaTimeHeaders = {
 app.use(cors());
 app.use(express.json());
 
+async function getTimeAsImage(project_name, index) {
+  const canvas = createCanvas(512, 512)
+  const canvasContext = canvas.getContext('2d')
+  canvasContext.font = '290px Impact'
+  canvasContext.fillStyle = '#fff'
+
+  const { data: { data } } = await axios.get(
+    `https://wakatime.com/api/v1/users/current/all_time_since_today?project=${project_name}`,
+    wakaTimeHeaders
+  )
+  const duration = intervalToDuration(
+    { start: 0, end: data.total_seconds * 1000 }
+  )
+
+  duration.days += duration.months * 30
+  duration.months = 0
+  duration.hours += duration.days * 24
+  duration.days = 0
+
+  const formatedDuration = formatDuration(
+    duration,
+    { format: ['hours', 'minutes'] }
+  )
+    .replace(" hours ", ".:")
+    .replace(" minutes", ". H")
+    .split(".")[index]
+
+  canvasContext.fillText(formatedDuration, -32, 364)
+
+  const image = Buffer.from(
+    canvas.toDataURL().replace(/^data:image\/png;base64,/, ''),
+    'base64'
+  )
+
+  return image
+}
+
 app.get('/api/time/:project_name', async (request, response) => {
   const { project_name } = request.params
 
@@ -39,49 +76,21 @@ app.get('/api/time/:project_name', async (request, response) => {
   }
 })
 
-app.get("/api/image/time/:force_update/:project_name.png", async (request, response) => {
-  const { project_name } = request.params
-
-  const canvas = createCanvas(1024, 512)
-  const canvasContext = canvas.getContext('2d')
-  canvasContext.font = '246px Impact'
-  canvasContext.fillStyle = '#fff'
+// index = 0 | 1
+app.get("/api/image/time/:index/:force_update/:project_name.png", async (request, response) => {
+  const { index, project_name } = request.params
 
   try {
-    const { data: { data } } = await axios.get(
-      `https://wakatime.com/api/v1/users/current/all_time_since_today?project=${project_name}`,
-      wakaTimeHeaders
-    )
-    const duration = intervalToDuration(
-      { start: 0, end: data.total_seconds * 1000 }
-    )
-
-    duration.days += duration.months * 30
-    duration.months = 0
-    duration.hours += duration.days * 24
-    duration.days = 0
-
-    let formatedDuration = formatDuration(
-      duration,
-      { format: ['hours', 'minutes'] }
-    ).replace(" hours ", ":").replace(" minutes", "h")
-
-    canvasContext.fillText(formatedDuration, -16, 256)
-
-    const img = Buffer.from(
-      canvas.toDataURL().replace(/^data:image\/png;base64,/, ''),
-      'base64'
-    )
+    const image = await getTimeAsImage(project_name, index)
 
     response.writeHead(200, {
       'Content-Type': 'image/png',
-      'Content-Length': img.length
+      'Content-Length': image.length
     });
-    return response.end(img);
+    return response.end(image);
   } catch (error) {
     return response.status(400).json(error);
   }
 })
-
 
 module.exports = app;
