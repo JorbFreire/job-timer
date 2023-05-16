@@ -39,7 +39,7 @@ app.get('/api/time/:project_name', async (request, response) => {
   }
 })
 
-app.get("/api/image/time/:project_name", async (request, response) => {
+app.get("/api/image/time/:project_name.png", async (request, response) => {
   const { project_name } = request.params
 
   const canvas = createCanvas(320, 30)
